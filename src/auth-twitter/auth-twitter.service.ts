@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import Twitter from 'twitter';
 import { SocialInterface } from '../social/interfaces/social.interface';
 import { AuthTwitterLoginDto } from './dto/auth-twitter-login.dto';
-import { AllConfigType } from 'src/config/config.type';
+import { AllConfigType } from '../config/config.type';
 
 @Injectable()
 export class AuthTwitterService {
@@ -34,7 +34,7 @@ export class AuthTwitterService {
     });
 
     return {
-      id: data.id.toString(),
+      id: data.id?.toString(),
       email: data.email,
       firstName: data.name,
     };

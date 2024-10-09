@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { EntityCondition } from 'src/utils/types/entity-condition.type';
-import { IPaginationOptions } from 'src/utils/types/pagination-options';
-import { FindOptionsWhere, Repository } from 'typeorm';
+
+import { FindOptionsWhere, Repository, In } from 'typeorm';
 import { UserEntity } from '../entities/user.entity';
 import { NullableType } from '../../../../../utils/types/nullable.type';
 import { FilterUserDto, SortUserDto } from '../../../../dto/query-user.dto';
 import { User } from '../../../../domain/user';
 import { UserRepository } from '../../user.repository';
 import { UserMapper } from '../mappers/user.mapper';
+import { IPaginationOptions } from '../../../../../utils/types/pagination-options';
 
 @Injectable()
 export class UsersRelationalRepository implements UserRepository {
@@ -37,7 +37,7 @@ export class UsersRelationalRepository implements UserRepository {
     const where: FindOptionsWhere<UserEntity> = {};
     if (filterOptions?.roles?.length) {
       where.role = filterOptions.roles.map((role) => ({
-        id: role.id,
+        id: Number(role.id),
       }));
     }
 
@@ -57,9 +57,43 @@ export class UsersRelationalRepository implements UserRepository {
     return entities.map((user) => UserMapper.toDomain(user));
   }
 
-  async findOne(fields: EntityCondition<User>): Promise<NullableType<User>> {
+  async findById(id: User['id']): Promise<NullableType<User>> {
     const entity = await this.usersRepository.findOne({
-      where: fields as FindOptionsWhere<UserEntity>,
+      where: { id: Number(id) },
+    });
+
+    return entity ? UserMapper.toDomain(entity) : null;
+  }
+
+  async findByIds(ids: User['id'][]): Promise<User[]> {
+    const entities = await this.usersRepository.find({
+      where: { id: In(ids) },
+    });
+
+    return entities.map((user) => UserMapper.toDomain(user));
+  }
+
+  async findByEmail(email: User['email']): Promise<NullableType<User>> {
+    if (!email) return null;
+
+    const entity = await this.usersRepository.findOne({
+      where: { email },
+    });
+
+    return entity ? UserMapper.toDomain(entity) : null;
+  }
+
+  async findBySocialIdAndProvider({
+    socialId,
+    provider,
+  }: {
+    socialId: User['socialId'];
+    provider: User['provider'];
+  }): Promise<NullableType<User>> {
+    if (!socialId || !provider) return null;
+
+    const entity = await this.usersRepository.findOne({
+      where: { socialId, provider },
     });
 
     return entity ? UserMapper.toDomain(entity) : null;
@@ -86,7 +120,7 @@ export class UsersRelationalRepository implements UserRepository {
     return UserMapper.toDomain(updatedEntity);
   }
 
-  async softDelete(id: User['id']): Promise<void> {
+  async remove(id: User['id']): Promise<void> {
     await this.usersRepository.softDelete(id);
   }
 }

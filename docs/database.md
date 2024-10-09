@@ -4,6 +4,7 @@
 
 ## Table of Contents <!-- omit in toc -->
 
+- [About databases](#about-databases)
 - [Working with database schema (TypeORM)](#working-with-database-schema-typeorm)
   - [Generate migration](#generate-migration)
   - [Run migration](#run-migration)
@@ -26,6 +27,12 @@
 
 ---
 
+## About databases
+
+Boilerplate supports two types of databases: PostgreSQL with TypeORM and MongoDB with Mongoose. You can choose one of them or use both in your project. The choice of database depends on the requirements of your project.
+
+For support of both databases used [Hexagonal Architecture](architecture.md#hexagonal-architecture).
+
 ## Working with database schema (TypeORM)
 
 ### Generate migration
@@ -36,7 +43,7 @@
    // /src/posts/infrastructure/persistence/relational/entities/post.entity.ts
 
    import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-   import { EntityRelationalHelper } from 'src/utils/relational-entity-helper';
+   import { EntityRelationalHelper } from '../../../../../utils/relational-entity-helper';
 
    @Entity()
    export class Post extends EntityRelationalHelper {
@@ -140,28 +147,28 @@ npm run seed:run:relational
     npm i --save-dev @faker-js/faker
     ```
 
-1. Create `src/database/seeds/user/user.factory.ts`:
+1. Create `src/database/seeds/relational/user/user.factory.ts`:
 
     ```ts
     import { faker } from '@faker-js/faker';
-    import { RoleEnum } from 'src/roles/roles.enum';
-    import { StatusEnum } from 'src/statuses/statuses.enum';
+    import { RoleEnum } from '../../../../roles/roles.enum';
+    import { StatusEnum } from '../../../../statuses/statuses.enum';
     import { Injectable } from '@nestjs/common';
     import { InjectRepository } from '@nestjs/typeorm';
     import { Repository } from 'typeorm';
-    import { Role } from 'src/roles/infrastructure/persistence/relational/entities/role.entity';
-    import { Status } from 'src/statuses/infrastructure/persistence/relational/entities/status.entity';
-    import { User } from 'src/users/infrastructure/persistence/relational/entities/user.entity';
+    import { RoleEntity } from '../../../../roles/infrastructure/persistence/relational/entities/role.entity';
+    import { UserEntity } from '../../../../users/infrastructure/persistence/relational/entities/user.entity';
+    import { StatusEntity } from '../../../../statuses/infrastructure/persistence/relational/entities/status.entity';
 
     @Injectable()
     export class UserFactory {
       constructor(
-        @InjectRepository(User)
-        private repositoryUser: Repository<User>,
-        @InjectRepository(Role)
-        private repositoryRole: Repository<Role>,
-        @InjectRepository(Status)
-        private repositoryStatus: Repository<Status>,
+        @InjectRepository(UserEntity)
+        private repositoryUser: Repository<UserEntity>,
+        @InjectRepository(RoleEntity)
+        private repositoryRole: Repository<RoleEntity>,
+        @InjectRepository(StatusEntity)
+        private repositoryStatus: Repository<StatusEntity>,
       ) {}
 
       createRandomUser() {
@@ -186,7 +193,7 @@ npm run seed:run:relational
     }
     ```
 
-1. Make changes in `src/database/seeds/user/user-seed.service.ts`:
+1. Make changes in `src/database/seeds/relational/user/user-seed.service.ts`:
 
     ```ts
     // Some code here...
@@ -212,19 +219,21 @@ npm run seed:run:relational
     }
     ```
 
-1. Make changes in `src/database/seeds/user/user-seed.module.ts`:
+1. Make changes in `src/database/seeds/relational/user/user-seed.module.ts`:
 
     ```ts
     import { Module } from '@nestjs/common';
     import { TypeOrmModule } from '@nestjs/typeorm';
-    import { User } from 'src/users/entities/user.entity';
+    
     import { UserSeedService } from './user-seed.service';
     import { UserFactory } from './user.factory';
-    import { Role } from 'src/roles/infrastructure/persistence/relational/entities/role.entity';
-    import { Status } from 'src/statuses/infrastructure/persistence/relational/entities/status.entity';
+
+    import { UserEntity } from '../../../../users/infrastructure/persistence/relational/entities/user.entity';
+    import { RoleEntity } from '../../../../roles/infrastructure/persistence/relational/entities/role.entity';
+    import { StatusEntity } from '../../../../statuses/infrastructure/persistence/relational/entities/status.entity';
 
     @Module({
-      imports: [TypeOrmModule.forFeature([User, Role, Status])],
+      imports: [TypeOrmModule.forFeature([UserEntity, Role, Status])],
       providers: [UserSeedService, UserFactory],
       exports: [UserSeedService, UserFactory],
     })
@@ -284,6 +293,6 @@ Designing schema for MongoDB is completely different from designing schema for r
 
 ---
 
-Previous: [Installing and Running](installing-and-running.md)
+Previous: [Command Line Interface](cli.md)
 
 Next: [Auth](auth.md)

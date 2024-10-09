@@ -1,21 +1,29 @@
-import { HttpException, HttpStatus, Module } from '@nestjs/common';
+import {
+  HttpStatus,
+  Module,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { FilesS3PresignedController } from './files.controller';
 import { MulterModule } from '@nestjs/platform-express';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import { S3Client } from '@aws-sdk/client-s3';
 import multerS3 from 'multer-s3';
-import { AllConfigType } from 'src/config/config.type';
+
 import { FilesS3PresignedService } from './files.service';
-import databaseConfig from 'src/database/config/database.config';
-import { DatabaseConfig } from 'src/database/config/database-config.type';
+
 import { DocumentFilePersistenceModule } from '../../persistence/document/document-persistence.module';
 import { RelationalFilePersistenceModule } from '../../persistence/relational/relational-persistence.module';
+import { AllConfigType } from '../../../../config/config.type';
+import { DatabaseConfig } from '../../../../database/config/database-config.type';
+import databaseConfig from '../../../../database/config/database.config';
 
+// <database-block>
 const infrastructurePersistenceModule = (databaseConfig() as DatabaseConfig)
   .isDocumentDatabase
   ? DocumentFilePersistenceModule
   : RelationalFilePersistenceModule;
+// </database-block>
 
 @Module({
   imports: [
@@ -40,15 +48,12 @@ const infrastructurePersistenceModule = (databaseConfig() as DatabaseConfig)
           fileFilter: (request, file, callback) => {
             if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/i)) {
               return callback(
-                new HttpException(
-                  {
-                    status: HttpStatus.UNPROCESSABLE_ENTITY,
-                    errors: {
-                      file: `cantUploadFileType`,
-                    },
+                new UnprocessableEntityException({
+                  status: HttpStatus.UNPROCESSABLE_ENTITY,
+                  errors: {
+                    file: `cantUploadFileType`,
                   },
-                  HttpStatus.UNPROCESSABLE_ENTITY,
-                ),
+                }),
                 false,
               );
             }

@@ -1,13 +1,23 @@
-import { Transform, Type } from 'class-transformer';
-import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsOptional, MinLength } from 'class-validator';
-import { lowerCaseTransformer } from 'src/utils/transformers/lower-case.transformer';
-import { RoleDto } from 'src/roles/dto/role.dto';
-import { StatusDto } from 'src/statuses/dto/status.dto';
-import { FileDto } from 'src/files/dto/file.dto';
+import {
+  // decorators here
+  Transform,
+  Type,
+} from 'class-transformer';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import {
+  // decorators here
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  MinLength,
+} from 'class-validator';
+import { FileDto } from '../../files/dto/file.dto';
+import { RoleDto } from '../../roles/dto/role.dto';
+import { StatusDto } from '../../statuses/dto/status.dto';
+import { lowerCaseTransformer } from '../../utils/transformers/lower-case.transformer';
 
 export class CreateUserDto {
-  @ApiProperty({ example: 'test1@example.com' })
+  @ApiProperty({ example: 'test1@example.com', type: String })
   @Transform(lowerCaseTransformer)
   @IsNotEmpty()
   @IsEmail()
@@ -21,27 +31,25 @@ export class CreateUserDto {
 
   socialId?: string | null;
 
-  @ApiProperty({ example: 'John' })
+  @ApiProperty({ example: 'John', type: String })
   @IsNotEmpty()
   firstName: string | null;
 
-  @ApiProperty({ example: 'Doe' })
+  @ApiProperty({ example: 'Doe', type: String })
   @IsNotEmpty()
   lastName: string | null;
 
-  @ApiProperty({ type: () => FileDto })
+  @ApiPropertyOptional({ type: () => FileDto })
   @IsOptional()
   photo?: FileDto | null;
 
-  @ApiProperty({ type: RoleDto })
+  @ApiPropertyOptional({ type: RoleDto })
   @IsOptional()
   @Type(() => RoleDto)
   role?: RoleDto | null;
 
-  @ApiProperty({ type: StatusDto })
+  @ApiPropertyOptional({ type: StatusDto })
   @IsOptional()
   @Type(() => StatusDto)
   status?: StatusDto;
-
-  hash?: string | null;
 }

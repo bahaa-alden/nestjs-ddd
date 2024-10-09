@@ -13,18 +13,23 @@
 
 ## Description <!-- omit in toc -->
 
-NestJS REST API boilerplate for typical project
+NestJS REST API boilerplate for a typical project
 
 [Full documentation here](/docs/readme.md)
 
 Demo: <https://nestjs-boilerplate-test.herokuapp.com/docs>
 
-Frontend (React, Next.js): <https://github.com/brocoders/extensive-react-boilerplate>
+A fully compatible frontend boilerplate: <https://github.com/brocoders/extensive-react-boilerplate>
+
+Belongs to the [bc boilerplates](https://bcboilerplates.com/) ecosystem
+
+<https://github.com/user-attachments/assets/a66f114a-c714-4036-8eeb-20cbf04ae985>
 
 ## Table of Contents <!-- omit in toc -->
 
 - [Features](#features)
 - [Contributors](#contributors)
+- [Support](#support)
 
 ## Features
 
@@ -53,6 +58,7 @@ Frontend (React, Next.js): <https://github.com/brocoders/extensive-react-boilerp
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/Shchepotin"><img src="https://avatars.githubusercontent.com/u/6001723?v=4?s=100" width="100px;" alt="Vladyslav Shchepotin"/><br /><sub><b>Vladyslav Shchepotin</b></sub></a><br /><a href="#maintenance-Shchepotin" title="Maintenance">🚧</a> <a href="#doc-Shchepotin" title="Documentation">📖</a> <a href="#code-Shchepotin" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/SergeiLomako"><img src="https://avatars.githubusercontent.com/u/31205374?v=4?s=100" width="100px;" alt="SergeiLomako"/><br /><sub><b>SergeiLomako</b></sub></a><br /><a href="#code-SergeiLomako" title="Code">💻</a></td>
       <td align="center" valign="top" width="14.28%"><a href="https://github.com/ElenVlass"><img src="https://avatars.githubusercontent.com/u/72293912?v=4?s=100" width="100px;" alt="Elena Vlasenko"/><br /><sub><b>Elena Vlasenko</b></sub></a><br /><a href="#doc-ElenVlass" title="Documentation">📖</a></td>
+      <td align="center" valign="top" width="14.28%"><a href="http://brocoders.com"><img src="https://avatars.githubusercontent.com/u/226194?v=4?s=100" width="100px;" alt="Rodion"/><br /><sub><b>Rodion</b></sub></a><br /><a href="#business-sars" title="Business development">💼</a></td>
     </tr>
   </tbody>
 </table>
@@ -61,3 +67,7 @@ Frontend (React, Next.js): <https://github.com/brocoders/extensive-react-boilerp
 <!-- prettier-ignore-end -->
 
 <!-- ALL-CONTRIBUTORS-LIST:END -->
+
+## Support
+
+If you seek consulting, support, or wish to collaborate, please contact us via [boilerplates@brocoders.com](mailto:boilerplates@brocoders.com). For any inquiries regarding boilerplates, feel free to ask on [GitHub Discussions](https://github.com/brocoders/nestjs-boilerplate/discussions) or [Discord](https://discord.com/channels/520622812742811698/1197293125434093701).

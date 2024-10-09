@@ -5,9 +5,8 @@ import { Session } from '../../../../domain/session';
 import { SessionSchemaClass } from '../entities/session.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { User } from 'src/users/domain/user';
-import { EntityCondition } from 'src/utils/types/entity-condition.type';
 import { SessionMapper } from '../mappers/session.mapper';
+import { User } from '../../../../../users/domain/user';
 
 @Injectable()
 export class SessionDocumentRepository implements SessionRepository {
@@ -16,15 +15,8 @@ export class SessionDocumentRepository implements SessionRepository {
     private sessionModel: Model<SessionSchemaClass>,
   ) {}
 
-  async findOne(
-    fields: EntityCondition<Session>,
-  ): Promise<NullableType<Session>> {
-    if (fields.id) {
-      const sessionObject = await this.sessionModel.findById(fields.id);
-      return sessionObject ? SessionMapper.toDomain(sessionObject) : null;
-    }
-
-    const sessionObject = await this.sessionModel.findOne(fields);
+  async findById(id: Session['id']): Promise<NullableType<Session>> {
+    const sessionObject = await this.sessionModel.findById(id);
     return sessionObject ? SessionMapper.toDomain(sessionObject) : null;
   }
 
@@ -35,21 +27,53 @@ export class SessionDocumentRepository implements SessionRepository {
     return SessionMapper.toDomain(sessionObject);
   }
 
-  async softDelete({
-    excludeId,
-    ...criteria
+  async update(
+    id: Session['id'],
+    payload: Partial<Session>,
+  ): Promise<Session | null> {
+    const clonedPayload = { ...payload };
+    delete clonedPayload.id;
+    delete clonedPayload.createdAt;
+    delete clonedPayload.updatedAt;
+    delete clonedPayload.deletedAt;
+
+    const filter = { _id: id.toString() };
+    const session = await this.sessionModel.findOne(filter);
+
+    if (!session) {
+      return null;
+    }
+
+    const sessionObject = await this.sessionModel.findOneAndUpdate(
+      filter,
+      SessionMapper.toPersistence({
+        ...SessionMapper.toDomain(session),
+        ...clonedPayload,
+      }),
+      { new: true },
+    );
+
+    return sessionObject ? SessionMapper.toDomain(sessionObject) : null;
+  }
+
+  async deleteById(id: Session['id']): Promise<void> {
+    await this.sessionModel.deleteOne({ _id: id.toString() });
+  }
+
+  async deleteByUserId({ userId }: { userId: User['id'] }): Promise<void> {
+    await this.sessionModel.deleteMany({ user: userId.toString() });
+  }
+
+  async deleteByUserIdWithExclude({
+    userId,
+    excludeSessionId,
   }: {
-    id?: Session['id'];
-    user?: Pick<User, 'id'>;
-    excludeId?: Session['id'];
+    userId: User['id'];
+    excludeSessionId: Session['id'];
   }): Promise<void> {
     const transformedCriteria = {
-      user: criteria.user?.id,
-      _id: criteria.id
-        ? criteria.id
-        : excludeId
-          ? { $not: { $eq: excludeId } }
-          : undefined,
+      user: userId.toString(),
+      _id: { $not: { $eq: excludeSessionId.toString() } },
     };
     await this.sessionModel.deleteMany(transformedCriteria);
   }

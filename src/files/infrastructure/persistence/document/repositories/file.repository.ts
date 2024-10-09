@@ -5,9 +5,9 @@ import { FileSchemaClass } from '../entities/file.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { FileType } from '../../../../domain/file';
-import { EntityCondition } from 'src/utils/types/entity-condition.type';
-import { NullableType } from 'src/utils/types/nullable.type';
+
 import { FileMapper } from '../mappers/file.mapper';
+import { NullableType } from '../../../../../utils/types/nullable.type';
 
 @Injectable()
 export class FileDocumentRepository implements FileRepository {
@@ -22,15 +22,13 @@ export class FileDocumentRepository implements FileRepository {
     return FileMapper.toDomain(fileObject);
   }
 
-  async findOne(
-    fields: EntityCondition<FileType>,
-  ): Promise<NullableType<FileType>> {
-    if (fields.id) {
-      const fileObject = await this.fileModel.findById(fields.id);
-      return fileObject ? FileMapper.toDomain(fileObject) : null;
-    }
-
-    const fileObject = await this.fileModel.findOne(fields);
+  async findById(id: FileType['id']): Promise<NullableType<FileType>> {
+    const fileObject = await this.fileModel.findById(id);
     return fileObject ? FileMapper.toDomain(fileObject) : null;
+  }
+
+  async findByIds(ids: FileType['id'][]): Promise<FileType[]> {
+    const fileObjects = await this.fileModel.find({ _id: { $in: ids } });
+    return fileObjects.map((fileObject) => FileMapper.toDomain(fileObject));
   }
 }

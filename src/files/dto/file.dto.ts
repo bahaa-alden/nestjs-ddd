@@ -1,10 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { FileType } from '../domain/file';
-import { IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
-export class FileDto implements FileType {
+export class FileDto {
   @ApiProperty()
   @IsString()
+  @IsNotEmpty()
   id: string;
 
   path: string;

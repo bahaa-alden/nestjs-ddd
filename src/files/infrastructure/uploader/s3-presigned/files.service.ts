@@ -1,11 +1,17 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpStatus,
+  Injectable,
+  PayloadTooLargeException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { FileRepository } from '../../persistence/file.repository';
-import { FileType } from 'src/files/domain/file';
+
 import { FileUploadDto } from './dto/file.dto';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { randomStringGenerator } from '@nestjs/common/utils/random-string-generator.util';
 import { ConfigService } from '@nestjs/config';
+import { FileType } from '../../../domain/file';
 
 @Injectable()
 export class FilesS3PresignedService {
@@ -32,27 +38,21 @@ export class FilesS3PresignedService {
     file: FileUploadDto,
   ): Promise<{ file: FileType; uploadSignedUrl: string }> {
     if (!file) {
-      throw new HttpException(
-        {
-          status: HttpStatus.UNPROCESSABLE_ENTITY,
-          errors: {
-            file: 'selectFile',
-          },
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: {
+          file: 'selectFile',
         },
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
+      });
     }
 
     if (!file.fileName.match(/\.(jpg|jpeg|png|gif)$/i)) {
-      throw new HttpException(
-        {
-          status: HttpStatus.UNPROCESSABLE_ENTITY,
-          errors: {
-            file: `cantUploadFileType`,
-          },
+      throw new UnprocessableEntityException({
+        status: HttpStatus.UNPROCESSABLE_ENTITY,
+        errors: {
+          file: `cantUploadFileType`,
         },
-        HttpStatus.UNPROCESSABLE_ENTITY,
-      );
+      });
     }
 
     if (
@@ -61,14 +61,11 @@ export class FilesS3PresignedService {
         infer: true,
       }) || 0)
     ) {
-      throw new HttpException(
-        {
-          statusCode: HttpStatus.PAYLOAD_TOO_LARGE,
-          error: 'Payload Too Large',
-          message: 'File too large',
-        },
-        HttpStatus.PAYLOAD_TOO_LARGE,
-      );
+      throw new PayloadTooLargeException({
+        statusCode: HttpStatus.PAYLOAD_TOO_LARGE,
+        error: 'Payload Too Large',
+        message: 'File too large',
+      });
     }
 
     const key = `${randomStringGenerator()}.${file.fileName

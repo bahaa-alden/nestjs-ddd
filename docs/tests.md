@@ -5,6 +5,8 @@
 - [Unit Tests](#unit-tests)
 - [E2E Tests](#e2e-tests)
 - [Tests in Docker](#tests-in-docker)
+  - [For relational database](#for-relational-database)
+  - [For document database](#for-document-database)
 
 ## Unit Tests
 
@@ -20,8 +22,16 @@ npm run test:e2e
 
 ## Tests in Docker
 
+### For relational database
+
 ```bash
-docker compose -f docker-compose.relational.ci.yaml --env-file env-example-relational -p ci up --build --exit-code-from api && docker compose -p ci rm -svf
+npm run test:e2e:relational:docker
+```
+
+### For document database
+
+```bash
+npm run test:e2e:document:docker
 ```
 
 ---
