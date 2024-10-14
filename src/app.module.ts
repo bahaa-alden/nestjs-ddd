@@ -32,6 +32,7 @@ const infrastructureDatabaseModule = MongooseModule.forRootAsync({
 });
 
 import { ProductsModule } from './products/products.module';
+import { LoggerModule } from './logger/logger.module';
 
 @Module({
   imports: [
@@ -86,6 +87,7 @@ import { ProductsModule } from './products/products.module';
     MailModule,
     MailerModule,
     HomeModule,
+    LoggerModule,
   ],
 })
 export class AppModule {}

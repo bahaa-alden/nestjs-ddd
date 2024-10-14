@@ -13,6 +13,7 @@ import validationOptions from './utils/validation-options';
 import { AllConfigType } from './config/config.type';
 import { ResolvePromisesInterceptor } from './utils/serializer.interceptor';
 import { HttpExceptionFilter } from './exceptions/http-exception.filter';
+import { LoggerService } from './logger/logger.service';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
@@ -28,6 +29,7 @@ async function bootstrap() {
 
   const httpAdapter = app.get(HttpAdapterHost);
   const appEnv = configService.getOrThrow('app.nodeEnv', { infer: true });
+  const logger = app.get(LoggerService);
   app.useGlobalFilters(new HttpExceptionFilter(httpAdapter, appEnv));
 
   useContainer(app.select(AppModule), { fallbackOnErrors: true });
@@ -61,5 +63,10 @@ async function bootstrap() {
   SwaggerModule.setup('docs', app, document);
 
   await app.listen(configService.getOrThrow('app.port', { infer: true }));
+
+  logger.log(
+    'NestApplication',
+    `Docs started on: ${configService.getOrThrow('app.backendDomain', { infer: true })}/docs`,
+  );
 }
 void bootstrap();
