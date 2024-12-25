@@ -17,8 +17,7 @@ import { AuthAppleModule } from './auth-apple/auth-apple.module';
 import { AuthFacebookModule } from './auth-facebook/auth-facebook.module';
 import { AuthGoogleModule } from './auth-google/auth-google.module';
 import { AuthTwitterModule } from './auth-twitter/auth-twitter.module';
-import { I18nModule } from 'nestjs-i18n/dist/i18n.module';
-import { HeaderResolver } from 'nestjs-i18n';
+import { HeaderResolver, I18nModule } from 'nestjs-i18n';
 import { MailModule } from './mail/mail.module';
 import { HomeModule } from './home/home.module';
 import { AllConfigType } from './config/config.type';
@@ -31,12 +30,10 @@ const infrastructureDatabaseModule = MongooseModule.forRootAsync({
   useClass: MongooseConfigService,
 });
 
-import { ProductsModule } from './products/products.module';
 import { LoggerModule } from './logger/logger.module';
 
 @Module({
   imports: [
-    ProductsModule,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [
